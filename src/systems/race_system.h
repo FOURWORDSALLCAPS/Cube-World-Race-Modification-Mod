@@ -7,20 +7,21 @@ class RaceSystem {
 private:
     int currentRace = -1;
 
-    float hpMult = 1.0f;
-    float armorMult = 1.0f;
-    float attackPowerMult = 1.0f;
-    float spellPowerMult = 1.0f;
-    float critMult = 1.0f;
-    float hasteMult = 1.0f;
-    float regenMult = 1.0f;
-    float manaGenMult = 1.0f;
-    float swimSpeedMult = 1.0f;
-    float climbSpeedMult = 1.0f;
-    float staminaCostMult = 1.0f;
-
     void ApplyBonuses(cube::Creature* player);
+    void ApplyAppearance(cube::Creature* player);
     void ApplyStaminaCostPatch(cube::Creature* player);
+
+    float GetHpMult(unsigned int race, unsigned char classType);
+    float GetArmorMult(unsigned int race);
+    float GetAttackPowerMult(unsigned int race);
+    float GetSpellPowerMult(unsigned int race);
+    float GetCritMult(unsigned int race);
+    float GetHasteMult(unsigned int race);
+    float GetRegenMult(unsigned int race);
+    float GetManaGenMult(unsigned int race);
+    float GetSwimSpeedMult(unsigned int race);
+    float GetClimbSpeedMult(unsigned int race);
+    float GetStaminaCostMult(unsigned int race);
 
 public:
     void Update(cube::Creature* player);
@@ -33,6 +34,4 @@ public:
     void OnHasteCalculated(cube::Creature* creature, float* haste);
     void OnRegenerationCalculated(cube::Creature* creature, float* regen);
     void OnManaGenerationCalculated(cube::Creature* creature, float* manaGen);
-    void OnSwimSpeedCalculated(cube::Creature* creature, float* speed);
-    void OnClimbSpeedCalculated(cube::Creature* creature, float* speed);
 };

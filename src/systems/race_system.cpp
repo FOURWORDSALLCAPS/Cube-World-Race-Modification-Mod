@@ -6,134 +6,210 @@ void RaceSystem::Update(cube::Creature* player) {
         currentRace = player->entity_data.race;
         ApplyBonuses(player);
     }
+    ApplyAppearance(player);
 }
 
 void RaceSystem::ApplyBonuses(cube::Creature* player) {
-    hpMult = 1.0f;
-    armorMult = 1.0f;
-    attackPowerMult = 1.0f;
-    spellPowerMult = 1.0f;
-    critMult = 1.0f;
-    hasteMult = 1.0f;
-    regenMult = 1.0f;
-    manaGenMult = 1.0f;
-    swimSpeedMult = 1.0f;
-    climbSpeedMult = 1.0f;
-    staminaCostMult = 1.0f;
-
     Race race = (Race)currentRace;
+    unsigned char classType = player->entity_data.classType;
 
     switch (race) {
-    case Race::HUMAN:
-        hpMult = 1.1f;
-        regenMult = 1.2f;
-        break;
-
-    case Race::ELF: {
-        Class cls = (Class)player->entity_data.classType;
-        if (cls == Class::MAGE) {
-            spellPowerMult = 1.3f;
-            manaGenMult = 1.5f;
-        }
-        else {
-            hpMult = 0.85f;
-            manaGenMult = 1.3f;
-        }
-        break;
-    }
-
-    case Race::DWARF:
-        armorMult = 1.3f;
-        hasteMult = 0.8f;
-        break;
-
     case Race::ORK:
-        attackPowerMult = 1.4f;
-        hpMult = 1.3f;
-        regenMult = 0.7f;
-        hasteMult = 0.8f;
-        staminaCostMult = 0.5f;
-        player->entity_data.appearance.graphics_scale = 1.3f;
-        player->entity_data.appearance.hitbox_scale = 1.3f;
-        player->entity_data.appearance.physics_scale = 1.3f;
+        player->entity_data.appearance.graphics_scale = 1.5f;
+        player->entity_data.appearance.hitbox_scale = 1.5f;
+        player->entity_data.appearance.physics_scale = 3.3f;
         break;
-
     case Race::GOBLIN:
-        hasteMult = 1.3f;
-        climbSpeedMult = 1.5f;
-        attackPowerMult = 0.8f;
-        armorMult = 0.8f;
         player->entity_data.appearance.graphics_scale = 0.7f;
         player->entity_data.appearance.hitbox_scale = 0.7f;
-        player->entity_data.appearance.physics_scale = 0.7f;
-        break;
-
-    case Race::LIZARDMAN:
-        swimSpeedMult = 2.0f;
-        critMult = 1.2f;
-        break;
-
-    case Race::UNDEAD:
-        hasteMult = 1.2f;
-        attackPowerMult = 1.2f;
-        critMult = 1.2f;
-        hpMult = 0.75f;
-        armorMult = 0.75f;
-        break;
-
-    case Race::FROGMAN:
-        swimSpeedMult = 2.5f;
-        spellPowerMult = 1.3f;
-        armorMult = 0.85f;
+        player->entity_data.appearance.physics_scale = 1.555f;
         break;
     }
 
     ApplyStaminaCostPatch(player);
 }
 
+void RaceSystem::ApplyAppearance(cube::Creature* player) {
+    Race race = (Race)currentRace;
+
+    switch (race) {
+    case Race::ORK:
+        if (player->entity_data.appearance.graphics_scale != 1.5f) {
+            player->entity_data.appearance.graphics_scale = 1.5f;
+            player->entity_data.appearance.hitbox_scale = 1.5f;
+            player->entity_data.appearance.physics_scale = 3.3f;
+        }
+        break;
+    case Race::GOBLIN:
+        if (player->entity_data.appearance.graphics_scale != 0.7f) {
+            player->entity_data.appearance.graphics_scale = 0.7f;
+            player->entity_data.appearance.hitbox_scale = 0.7f;
+            player->entity_data.appearance.physics_scale = 1.555f;
+        }
+        break;
+    }
+}
+
+bool IsPlayer(cube::Creature* creature) {
+    return creature->entity_data.classType >= 1 &&
+        creature->entity_data.classType <= 4 &&
+        creature->entity_data.hostility_type == 0;
+}
+
+float RaceSystem::GetHpMult(unsigned int race, unsigned char classType) {
+    switch ((Race)race) {
+    case Race::ELF:     return (classType == 3) ? 1.0f : 0.85f;
+    case Race::HUMAN:   return 1.1f;
+    case Race::GOBLIN:  return 0.5f;
+    case Race::LIZARDMAN: return 1.0f;
+    case Race::DWARF:   return 1.0f;
+    case Race::ORK:     return 1.3f;
+    case Race::FROGMAN: return 1.0f;
+    case Race::UNDEAD:  return 0.75f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetArmorMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::GOBLIN:  return 0.8f;
+    case Race::DWARF:   return 1.3f;
+    case Race::FROGMAN: return 0.85f;
+    case Race::UNDEAD:  return 0.75f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetAttackPowerMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::GOBLIN:  return 0.8f;
+    case Race::ORK:     return 1.4f;
+    case Race::UNDEAD:  return 1.2f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetSpellPowerMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::ELF:     return 1.3f;
+    case Race::FROGMAN: return 1.3f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetCritMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::LIZARDMAN: return 1.2f;
+    case Race::UNDEAD:    return 1.2f;
+    default:              return 1.0f;
+    }
+}
+
+float RaceSystem::GetHasteMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::GOBLIN:  return 1.3f;
+    case Race::DWARF:   return 0.8f;
+    case Race::ORK:     return 0.8f;
+    case Race::UNDEAD:  return 1.2f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetRegenMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::HUMAN:   return 1.2f;
+    case Race::ORK:     return 0.7f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetManaGenMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::ELF:     return 1.5f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetSwimSpeedMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::LIZARDMAN: return 2.0f;
+    case Race::FROGMAN:   return 2.5f;
+    default:              return 1.0f;
+    }
+}
+
+float RaceSystem::GetClimbSpeedMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::GOBLIN:  return 1.5f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetStaminaCostMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::ORK:     return 0.5f;
+    default:            return 1.0f;
+    }
+}
+
 void RaceSystem::OnHPCalculated(cube::Creature* creature, float* hp) {
-    *hp *= hpMult;
+    if (IsPlayer(creature)) {
+        *hp *= GetHpMult(creature->entity_data.race, creature->entity_data.classType);
+    }
 }
 
 void RaceSystem::OnArmorCalculated(cube::Creature* creature, float* armor) {
-    *armor *= armorMult;
+    if (IsPlayer(creature)) {
+        *armor *= GetArmorMult(creature->entity_data.race);
+    }
 }
 
 void RaceSystem::OnAttackPowerCalculated(cube::Creature* creature, float* power) {
-    *power *= attackPowerMult;
+    if (IsPlayer(creature)) {
+        *power *= GetAttackPowerMult(creature->entity_data.race);
+    }
 }
 
 void RaceSystem::OnSpellPowerCalculated(cube::Creature* creature, float* power) {
-    *power *= spellPowerMult;
+    if (IsPlayer(creature)) {
+        if (creature->entity_data.classType == 3 || creature->entity_data.race == 13) {
+            *power *= GetSpellPowerMult(creature->entity_data.race);
+        }
+    }
 }
 
 void RaceSystem::OnCriticalCalculated(cube::Creature* creature, float* critical) {
-    *critical *= critMult;
+    if (IsPlayer(creature)) {
+        *critical *= GetCritMult(creature->entity_data.race);
+    }
 }
 
 void RaceSystem::OnHasteCalculated(cube::Creature* creature, float* haste) {
-    *haste *= hasteMult;
+    if (IsPlayer(creature)) {
+        *haste *= GetHasteMult(creature->entity_data.race);
+    }
 }
 
 void RaceSystem::OnRegenerationCalculated(cube::Creature* creature, float* regen) {
-    *regen *= regenMult;
+    if (IsPlayer(creature)) {
+        *regen *= GetRegenMult(creature->entity_data.race);
+    }
 }
 
 void RaceSystem::OnManaGenerationCalculated(cube::Creature* creature, float* manaGen) {
-    *manaGen *= manaGenMult;
-}
-
-void RaceSystem::OnSwimSpeedCalculated(cube::Creature* creature, float* speed) {
-    *speed *= swimSpeedMult;
-}
-
-void RaceSystem::OnClimbSpeedCalculated(cube::Creature* creature, float* speed) {
-    *speed *= climbSpeedMult;
+    if (IsPlayer(creature)) {
+        *manaGen *= GetManaGenMult(creature->entity_data.race);
+    }
 }
 
 void RaceSystem::ApplyStaminaCostPatch(cube::Creature* player) {
     uint64_t base = MemoryHelper::GetCubeBase();
+
     float* costAddr = (float*)(base + 0x472208);
-    float newCost = 0.00025f * staminaCostMult;
+    float newCost = 0.00025f * GetStaminaCostMult(player->entity_data.race);
     MemoryHelper::PatchMemory(costAddr, newCost);
+
+    float* rollCostAddr = (float*)(base + 0x4AC95C);
+    float newRollCost = 0.25f * GetStaminaCostMult(player->entity_data.race);
+    MemoryHelper::PatchMemory(rollCostAddr, newRollCost);
 }
