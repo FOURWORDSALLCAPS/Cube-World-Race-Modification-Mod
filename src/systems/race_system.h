@@ -15,11 +15,12 @@ private:
     float hasteMult = 1.0f;
     float regenMult = 1.0f;
     float manaGenMult = 1.0f;
-    float lampRadiusMult = 1.0f;
     float swimSpeedMult = 1.0f;
     float climbSpeedMult = 1.0f;
+    float staminaCostMult = 1.0f;
 
     void ApplyBonuses(cube::Creature* player);
+    void ApplyStaminaCostPatch(cube::Creature* player);
 
 public:
     void Update(cube::Creature* player);
@@ -32,7 +33,6 @@ public:
     void OnHasteCalculated(cube::Creature* creature, float* haste);
     void OnRegenerationCalculated(cube::Creature* creature, float* regen);
     void OnManaGenerationCalculated(cube::Creature* creature, float* manaGen);
-    void OnLampRadiusCalculated(cube::Creature* creature, float* radius);
     void OnSwimSpeedCalculated(cube::Creature* creature, float* speed);
     void OnClimbSpeedCalculated(cube::Creature* creature, float* speed);
 };

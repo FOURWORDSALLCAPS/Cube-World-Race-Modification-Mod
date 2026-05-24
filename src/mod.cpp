@@ -1,4 +1,12 @@
-#include "mod.h"
+﻿#include "mod.h"
+#include "memory_helper.h"
+
+void Mod::Initialize() {
+    uint64_t base = MemoryHelper::GetCubeBase();
+    unsigned char newBytes[] = { 0xF3, 0x44, 0x0F, 0x10, 0x2D, 0x31, 0x2D, 0x19, 0x00 };
+    void* codeAddr = (void*)(base + 0x2DF4CE);
+    MemoryHelper::PatchMemory(codeAddr, newBytes, sizeof(newBytes));
+}
 
 Mod::Mod() {
     raceSystem = new RaceSystem();

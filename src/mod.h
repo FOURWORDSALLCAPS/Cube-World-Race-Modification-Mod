@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "systems/race_system.h"
 
 class Mod : public GenericMod {
@@ -9,6 +10,7 @@ public:
     Mod();
     ~Mod();
 
+    virtual void Initialize() override;
     virtual void OnGameTick(cube::Game* game) override;
     virtual void OnCreatureHPCalculated(cube::Creature* creature, float* hp) override;
     virtual void OnCreatureManaGenerationCalculated(cube::Creature* creature, float* manaGeneration) override;

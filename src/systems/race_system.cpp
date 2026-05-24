@@ -1,4 +1,5 @@
 #include "race_system.h"
+#include "../memory_helper.h"
 
 void RaceSystem::Update(cube::Creature* player) {
     if (player->entity_data.race != currentRace) {
@@ -16,9 +17,9 @@ void RaceSystem::ApplyBonuses(cube::Creature* player) {
     hasteMult = 1.0f;
     regenMult = 1.0f;
     manaGenMult = 1.0f;
-    lampRadiusMult = 1.0f;
     swimSpeedMult = 1.0f;
     climbSpeedMult = 1.0f;
+    staminaCostMult = 1.0f;
 
     Race race = (Race)currentRace;
 
@@ -43,7 +44,6 @@ void RaceSystem::ApplyBonuses(cube::Creature* player) {
 
     case Race::DWARF:
         armorMult = 1.3f;
-        lampRadiusMult = 1.5f;
         hasteMult = 0.8f;
         break;
 
@@ -52,6 +52,7 @@ void RaceSystem::ApplyBonuses(cube::Creature* player) {
         hpMult = 1.3f;
         regenMult = 0.7f;
         hasteMult = 0.8f;
+        staminaCostMult = 0.5f;
         player->entity_data.appearance.graphics_scale = 1.3f;
         player->entity_data.appearance.hitbox_scale = 1.3f;
         player->entity_data.appearance.physics_scale = 1.3f;
@@ -86,6 +87,8 @@ void RaceSystem::ApplyBonuses(cube::Creature* player) {
         armorMult = 0.85f;
         break;
     }
+
+    ApplyStaminaCostPatch(player);
 }
 
 void RaceSystem::OnHPCalculated(cube::Creature* creature, float* hp) {
@@ -120,14 +123,17 @@ void RaceSystem::OnManaGenerationCalculated(cube::Creature* creature, float* man
     *manaGen *= manaGenMult;
 }
 
-void RaceSystem::OnLampRadiusCalculated(cube::Creature* creature, float* radius) {
-    *radius *= lampRadiusMult;
-}
-
 void RaceSystem::OnSwimSpeedCalculated(cube::Creature* creature, float* speed) {
     *speed *= swimSpeedMult;
 }
 
 void RaceSystem::OnClimbSpeedCalculated(cube::Creature* creature, float* speed) {
     *speed *= climbSpeedMult;
+}
+
+void RaceSystem::ApplyStaminaCostPatch(cube::Creature* player) {
+    uint64_t base = MemoryHelper::GetCubeBase();
+    float* costAddr = (float*)(base + 0x472208);
+    float newCost = 0.00025f * staminaCostMult;
+    MemoryHelper::PatchMemory(costAddr, newCost);
 }
