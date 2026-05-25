@@ -7,7 +7,6 @@ class RaceSystem {
 private:
     int currentRace = -1;
 
-    void ApplyBonuses(cube::Creature* player);
     void ApplyAppearance(cube::Creature* player);
     void ApplyStaminaCostPatch(cube::Creature* player);
 
@@ -21,7 +20,9 @@ private:
     float GetManaGenMult(unsigned int race);
     float GetSwimSpeedMult(unsigned int race);
     float GetClimbSpeedMult(unsigned int race);
-    float GetStaminaCostMult(unsigned int race);
+    float GetClimbStaminaCostMult(unsigned int race);
+    float GetRollStaminaCostMult(unsigned int race);
+    float GetDiveStaminaCostMult(unsigned int race);
 
 public:
     void Update(cube::Creature* player);

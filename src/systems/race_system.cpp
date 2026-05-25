@@ -4,49 +4,33 @@
 void RaceSystem::Update(cube::Creature* player) {
     if (player->entity_data.race != currentRace) {
         currentRace = player->entity_data.race;
-        ApplyBonuses(player);
+        ApplyStaminaCostPatch(player);
     }
     ApplyAppearance(player);
-}
-
-void RaceSystem::ApplyBonuses(cube::Creature* player) {
-    Race race = (Race)currentRace;
-    unsigned char classType = player->entity_data.classType;
-
-    switch (race) {
-    case Race::ORK:
-        player->entity_data.appearance.graphics_scale = 1.5f;
-        player->entity_data.appearance.hitbox_scale = 1.5f;
-        player->entity_data.appearance.physics_scale = 3.3f;
-        break;
-    case Race::GOBLIN:
-        player->entity_data.appearance.graphics_scale = 0.7f;
-        player->entity_data.appearance.hitbox_scale = 0.7f;
-        player->entity_data.appearance.physics_scale = 1.555f;
-        break;
-    }
-
-    ApplyStaminaCostPatch(player);
 }
 
 void RaceSystem::ApplyAppearance(cube::Creature* player) {
     Race race = (Race)currentRace;
 
     switch (race) {
-    case Race::ORK:
-        if (player->entity_data.appearance.graphics_scale != 1.5f) {
-            player->entity_data.appearance.graphics_scale = 1.5f;
-            player->entity_data.appearance.hitbox_scale = 1.5f;
-            player->entity_data.appearance.physics_scale = 3.3f;
-        }
-        break;
-    case Race::GOBLIN:
-        if (player->entity_data.appearance.graphics_scale != 0.7f) {
-            player->entity_data.appearance.graphics_scale = 0.7f;
-            player->entity_data.appearance.hitbox_scale = 0.7f;
-            player->entity_data.appearance.physics_scale = 1.555f;
-        }
-        break;
+        case Race::ORK:
+            if (player->entity_data.appearance.graphics_scale != 1.5f) {
+                player->entity_data.appearance.graphics_scale = 1.5f;
+                player->entity_data.appearance.hitbox_scale = 1.5f;
+                player->entity_data.appearance.physics_scale = 3.3f;
+            }
+            break;
+
+        case Race::GOBLIN:
+            if (player->entity_data.appearance.graphics_scale != 0.7f) {
+                player->entity_data.appearance.graphics_scale = 0.7f;
+                player->entity_data.appearance.hitbox_scale = 0.7f;
+                player->entity_data.appearance.physics_scale = 1.555f;
+            }
+            break;
+
+        default:
+            break;
     }
 }
 
@@ -145,7 +129,21 @@ float RaceSystem::GetClimbSpeedMult(unsigned int race) {
     }
 }
 
-float RaceSystem::GetStaminaCostMult(unsigned int race) {
+float RaceSystem::GetClimbStaminaCostMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::ORK:     return 0.5f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetRollStaminaCostMult(unsigned int race) {
+    switch ((Race)race) {
+    case Race::ORK:     return 0.5f;
+    default:            return 1.0f;
+    }
+}
+
+float RaceSystem::GetDiveStaminaCostMult(unsigned int race) {
     switch ((Race)race) {
     case Race::ORK:     return 0.5f;
     default:            return 1.0f;
@@ -206,10 +204,14 @@ void RaceSystem::ApplyStaminaCostPatch(cube::Creature* player) {
     uint64_t base = MemoryHelper::GetCubeBase();
 
     float* costAddr = (float*)(base + 0x472208);
-    float newCost = 0.00025f * GetStaminaCostMult(player->entity_data.race);
-    MemoryHelper::PatchMemory(costAddr, newCost);
+    float newClimbCost = 0.00025f * GetClimbStaminaCostMult(player->entity_data.race);
+    MemoryHelper::PatchMemory(costAddr, newClimbCost);
 
     float* rollCostAddr = (float*)(base + 0x4AC95C);
-    float newRollCost = 0.25f * GetStaminaCostMult(player->entity_data.race);
+    float newRollCost = 0.25f * GetRollStaminaCostMult(player->entity_data.race);
     MemoryHelper::PatchMemory(rollCostAddr, newRollCost);
+
+    float* diveCostAddr = (float*)(base + 0x472220);
+    float newDiveCost = 0.001f * GetDiveStaminaCostMult(player->entity_data.race);
+    MemoryHelper::PatchMemory(diveCostAddr, newDiveCost);
 }
