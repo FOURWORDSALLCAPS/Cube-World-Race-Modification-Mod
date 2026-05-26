@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
 #include "systems/race_system.h"
+#include "systems/race_expansion_system.h"
 
 class Mod : public GenericMod {
 private:
     RaceSystem* raceSystem;
+    RaceExpansionSystem* raceExpansionSystem;
 
 public:
     Mod();

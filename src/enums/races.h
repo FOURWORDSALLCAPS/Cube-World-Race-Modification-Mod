@@ -8,5 +8,6 @@ enum class Race : unsigned int {
     DWARF = 9,
     ORK = 11,
     FROGMAN = 13,
-    UNDEAD = 15
+    UNDEAD = 15,
+    VAMPIRE = 97
 };

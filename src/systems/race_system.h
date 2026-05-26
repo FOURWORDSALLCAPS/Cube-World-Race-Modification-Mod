@@ -27,6 +27,7 @@ private:
 public:
     void Update(cube::Creature* player);
 
+    void Initialize();
     void OnHPCalculated(cube::Creature* creature, float* hp);
     void OnArmorCalculated(cube::Creature* creature, float* armor);
     void OnAttackPowerCalculated(cube::Creature* creature, float* power);

@@ -200,6 +200,18 @@ void RaceSystem::OnManaGenerationCalculated(cube::Creature* creature, float* man
     }
 }
 
+void RaceSystem::Initialize() {
+    uint64_t base = MemoryHelper::GetCubeBase();
+
+    unsigned char rollBytes[] = { 0xF3, 0x44, 0x0F, 0x10, 0x2D, 0x31, 0x2D, 0x19, 0x00 };
+    void* rollAddr = (void*)(base + 0x2DF4CE);
+    MemoryHelper::PatchMemory(rollAddr, rollBytes, sizeof(rollBytes));
+
+    unsigned char diveBytes[] = { 0xF3, 0x44, 0x0F, 0x10, 0x1D, 0x01, 0x2C, 0x19, 0x00 };
+    void* diveAddr = (void*)(base + 0x2DF616);
+    MemoryHelper::PatchMemory(diveAddr, diveBytes, sizeof(diveBytes));
+}
+
 void RaceSystem::ApplyStaminaCostPatch(cube::Creature* player) {
     uint64_t base = MemoryHelper::GetCubeBase();
 
